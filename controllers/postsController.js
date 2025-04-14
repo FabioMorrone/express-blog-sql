@@ -1,4 +1,6 @@
+const connection = require('../data/db')
 const lista = require('../data/lista');
+
 
 function index(req, res) {
 
