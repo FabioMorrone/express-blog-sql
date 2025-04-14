@@ -10,7 +10,7 @@ router.get('/', postsController.index);
 
 
 //show
-router.get('/:slug', postsController.show);
+router.get('/:id', postsController.show);
 
 
 // store

@@ -19,19 +19,33 @@ function index(req, res) {
 
 
 function show(req, res) {
-    const postSlug = req.params.slug;
 
-    const post = lista.find(post => post.slug === postSlug);
 
-    if (!post) {
-        return res.status(404).json({
-            error: '404 not found',
-            message: 'post not found'
+    const postId = Number(req.params.id);
+
+    const sql = 'SELECT * FROM posts WHERE id = ?'
+
+    const sqlJoin = 'SELECT tags.* FROM post_tag JOIN tags ON post_tag.tag_id = tags.id WHERE post_tag.post_id = ?'
+
+
+    connection.query(sql, [postId], (err, postResults) => {
+        if (err) return res.status(500).json({ error: 'Database query failed' });
+        if (postResults.length === 0) return res.status(404).json({ error: 'Post not found' });
+
+        const post = postResults[0];
+
+        connection.query(sqlJoin, [postId], (err, postResults) => {
+            if (err) return res.status(500).json({ error: 'Database query failed' });
+            console.log(postResults);
+            post.tag = postResults
+
+
+            res.json(post);
         });
-    }
-
-    res.json(post);
+    });
 }
+
+
 
 
 
@@ -95,25 +109,14 @@ function modify(req, res) {
 
 
 const destroy = (req, res) => {
-    const postSlug = Number(req.params.slug);
+    const postId = Number(req.params.id);
+    const sql = 'DELETE FROM posts WHERE id = ?'
 
+    connection.query(sql, [postId], (err) => {
+        if (err) return res.status(500).json({ error: 'Failed to delete post' });
+        res.sendStatus(204)
+    })
 
-    const post = lista.find(post => post.slug === postSlug);
-    console.log(post);
-
-    if (!post) {
-
-        return res.status(404).json({
-            error: '404 not found',
-            message: 'post not found'
-        });
-    }
-
-
-    lista.splice(lista.indexOf(post), 1);
-    console.log(lista);
-
-    res.sendStatus(204)
 
 }
 
