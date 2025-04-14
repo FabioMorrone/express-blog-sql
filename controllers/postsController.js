@@ -3,18 +3,17 @@ const lista = require('../data/lista');
 
 
 function index(req, res) {
+    const sql = 'SELECT * FROM posts';
 
-    let filteredlista = lista;
+    connection.query(sql, (err, results) => {
+        if (err) return res.status(500).json({ error: 'Database query failed' });
+        res.json(results);
+    });
 
-    console.log(req);
 
-    if (req.query.tags) {
-        console.log('filter the result');
-        filteredlista = lista.filter(post => post.tags.includes(req.query.tags));
-    }
-    //  res.send('return all posts here');
-    res.json(filteredlista);
 }
+
+
 
 
 
